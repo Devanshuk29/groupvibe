@@ -1,0 +1,237 @@
+{
+  "places": [
+    {
+      "id": 1,
+      "name": "Opus Cafe & Bar",
+      "type": "restaurant",
+      "category": "dining",
+      
+      "location": {
+        "google_maps_link": "https://maps.google.com/?q=28.6356,77.2245",
+        "latitude": 28.6356,
+        "longitude": 77.2245,
+        "address": "M-Block Market, Greater Kailash, New Delhi",
+        "area": "Greater Kailash"
+      },
+      
+      "details": {
+        "price_range": "₹800-2000",
+        "rating": 4.7,
+        "review_count": 1240,
+        "hours": {
+          "monday": "10:00-23:00",
+          "friday": "10:00-00:30",
+          "saturday": "11:00-00:30",
+          "sunday": "11:00-23:00"
+        }
+      },
+      
+      "restaurant_specific": {
+        "cuisines": ["fusion", "north_indian", "international"],
+        "vegetarian_options": true,
+        "ambiance": ["modern", "upscale", "vibrant"],
+        "group_friendly": true,
+        "reservation_needed": true
+      }
+    },
+    
+    {
+      "id": 2,
+      "name": "Water Kingdom Theme Park",
+      "type": "theme_park",
+      "category": "adventure",
+      
+      "location": {
+        "google_maps_link": "https://maps.google.com/?q=19.0325,72.8560",
+        "latitude": 19.0325,
+        "longitude": 72.8560,
+        "address": "Borivali East, Mumbai",
+        "area": "Borivali"
+      },
+      
+      "details": {
+        "price_range": "₹1500-3000",
+        "rating": 4.5,
+        "review_count": 5420,
+        "hours": {
+          "monday": "10:00-18:00",
+          "tuesday": "10:00-18:00",
+          "wednesday": "10:00-18:00",
+          "thursday": "10:00-18:00",
+          "friday": "10:00-20:00",
+          "saturday": "09:00-20:00",
+          "sunday": "09:00-20:00"
+        }
+      },
+      
+      "activity_specific": {
+        "activities": ["water_rides", "swimming", "slides", "family_friendly"],
+        "best_season": "summer",
+        "group_friendly": true,
+        "age_restriction": "all_ages",
+        "parking": true,
+        "food_inside": true
+      }
+    },
+    
+    {
+      "id": 3,
+      "name": "Delhi Zoo",
+      "type": "zoo",
+      "category": "nature",
+      
+      "location": {
+        "google_maps_link": "https://maps.google.com/?q=28.5975,77.2514",
+        "latitude": 28.5975,
+        "longitude": 77.2514,
+        "address": "New Delhi",
+        "area": "Central Delhi"
+      },
+      
+      "details": {
+        "price_range": "₹50-200",
+        "rating": 4.2,
+        "review_count": 3210,
+        "hours": {
+          "monday": "CLOSED",
+          "tuesday": "09:00-17:00",
+          "wednesday": "09:00-17:00",
+          "thursday": "09:00-17:00",
+          "friday": "09:00-17:00",
+          "saturday": "09:00-17:00",
+          "sunday": "09:00-17:00"
+        }
+      },
+      
+      "activity_specific": {
+        "activities": ["wildlife_viewing", "walking", "photography", "family_friendly"],
+        "best_season": "winter",
+        "group_friendly": true,
+        "age_restriction": "all_ages",
+        "parking": true,
+        "food_inside": false,
+        "duration_hours": 3
+      }
+    },
+    
+    {
+      "id": 4,
+      "name": "Lodhi Garden",
+      "type": "garden",
+      "category": "nature",
+      
+      "location": {
+        "google_maps_link": "https://maps.google.com/?q=28.5936,77.2189",
+        "latitude": 28.5936,
+        "longitude": 77.2189,
+        "address": "Lodhi Road, New Delhi",
+        "area": "Central Delhi"
+      },
+      
+      "details": {
+        "price_range": "free",
+        "rating": 4.6,
+        "review_count": 4120,
+        "hours": {
+          "monday": "06:00-20:00",
+          "tuesday": "06:00-20:00",
+          "wednesday": "06:00-20:00",
+          "thursday": "06:00-20:00",
+          "friday": "06:00-20:00",
+          "saturday": "06:00-20:00",
+          "sunday": "06:00-20:00"
+        }
+      },
+      
+      "activity_specific": {
+        "activities": ["walking", "jogging", "photography", "picnic", "relaxation"],
+        "best_season": "winter",
+        "group_friendly": true,
+        "age_restriction": "all_ages",
+        "parking": true,
+        "food_inside": false,
+        "duration_hours": 2
+      }
+    },
+    
+    {
+      "id": 5,
+      "name": "Bowling Factory",
+      "type": "sports_center",
+      "category": "sports",
+      
+      "location": {
+        "google_maps_link": "https://maps.google.com/?q=28.6328,77.2197",
+        "latitude": 28.6328,
+        "longitude": 77.2197,
+        "address": "Ambience Mall, Vasant Kunj, New Delhi",
+        "area": "South Delhi"
+      },
+      
+      "details": {
+        "price_range": "₹300-800",
+        "rating": 4.4,
+        "review_count": 2340,
+        "hours": {
+          "monday": "11:00-23:00",
+          "tuesday": "11:00-23:00",
+          "wednesday": "11:00-23:00",
+          "thursday": "11:00-23:00",
+          "friday": "11:00-00:30",
+          "saturday": "10:00-00:30",
+          "sunday": "10:00-23:00"
+        }
+      },
+      
+      "activity_specific": {
+        "activities": ["bowling", "arcade", "billiards", "group_games"],
+        "best_season": "all_year",
+        "group_friendly": true,
+        "age_restriction": "all_ages",
+        "parking": true,
+        "food_inside": true,
+        "min_group_size": 2
+      }
+    },
+    
+    {
+      "id": 6,
+      "name": "Connaught Place Market",
+      "type": "shopping_market",
+      "category": "shopping",
+      
+      "location": {
+        "google_maps_link": "https://maps.google.com/?q=28.6304,77.2008",
+        "latitude": 28.6304,
+        "longitude": 77.2008,
+        "address": "Connaught Place, New Delhi",
+        "area": "Central Delhi"
+      },
+      
+      "details": {
+        "price_range": "varies",
+        "rating": 4.3,
+        "review_count": 6540,
+        "hours": {
+          "monday": "10:00-22:00",
+          "tuesday": "10:00-22:00",
+          "wednesday": "10:00-22:00",
+          "thursday": "10:00-22:00",
+          "friday": "10:00-22:00",
+          "saturday": "10:00-22:00",
+          "sunday": "12:00-21:00"
+        }
+      },
+      
+      "activity_specific": {
+        "activities": ["shopping", "browsing", "dining", "people_watching"],
+        "best_season": "winter",
+        "group_friendly": true,
+        "age_restriction": "all_ages",
+        "parking": true,
+        "food_inside": true,
+        "brands": ["international", "indian", "boutique"]
+      }
+    }
+  ]
+}
