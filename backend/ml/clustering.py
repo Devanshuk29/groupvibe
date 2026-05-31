@@ -29,7 +29,7 @@ def cluster_friends(friends):
     scaler = StandardScaler()
     features_scaled = scaler.fit_transform(features)
     
-    clusterer = hdbscan.HDBSCAN(min_cluster_size=2, min_samples=1)
+    clusterer = hdbscan.HDBSCAN(min_cluster_size=2, min_samples=1, allow_single_cluster=True)
     clusters = clusterer.fit_predict(features_scaled)
     
     result = {}

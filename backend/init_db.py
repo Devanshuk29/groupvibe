@@ -1,9 +1,13 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 import sqlite3
 import json
 from datetime import datetime
 import os
 
 conn = sqlite3.connect('data/app.db')
+conn.text_factory = str
+conn.execute('PRAGMA encoding="UTF-8"')
 cursor = conn.cursor()
 
 cursor.execute('''
@@ -87,7 +91,7 @@ CREATE TABLE IF NOT EXISTS votes (
 )
 ''')
 
-with open('data/places.json') as f:
+with open('data/places.json', encoding='utf-8') as f:
   data = json.load(f)
   for place in data['places']:
 

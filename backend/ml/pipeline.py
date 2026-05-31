@@ -89,7 +89,7 @@ def generate_recommendations(session_members, top_n=5):
                     w2v_bonus += max(0, similarity) * 0.1
         
         final_score = (nn_score * 0.7) + (w2v_bonus * 0.3)
-        final_score = round(min(1.0, final_score), 4)
+        final_score = round(float(min(1.0, final_score)), 4)
         
         scored_places.append({
             "place": place,
@@ -110,10 +110,10 @@ def generate_recommendations(session_members, top_n=5):
             "name": place["name"],
             "type": place["type"],
             "category": place["category"],
-            "score": item["score"],
+            "score": float(item["score"]),
             "address": place["address"],
             "google_maps_link": place["google_maps_link"],
-            "rating": place["rating"],
+            "rating": float(place["rating"]) if place["rating"] else 0.0,
             "price_range": place["price_range"],
             "why_recommended": f"Matches group's top preferences: {', '.join(top_categories)}"
         })
