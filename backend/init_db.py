@@ -3,11 +3,9 @@ import json
 from datetime import datetime
 import os
 
-# Create database
 conn = sqlite3.connect('data/app.db')
 cursor = conn.cursor()
 
-# Create tables
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS sessions (
   id TEXT PRIMARY KEY,
@@ -89,12 +87,10 @@ CREATE TABLE IF NOT EXISTS votes (
 )
 ''')
 
-# Load places from JSON
 with open('data/places.json') as f:
   data = json.load(f)
   for place in data['places']:
 
-    # Handle both restaurant_specific and activity_specific
     spec = place.get('activity_specific', place.get('restaurant_specific', {}))
 
     cursor.execute('''

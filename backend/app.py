@@ -7,7 +7,6 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-# Database path
 DATABASE = 'data/app.db'
 
 def get_db():
@@ -16,21 +15,19 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-# ==================== HEALTH CHECK ====================
 
 @app.route('/api/health', methods=['GET'])
 def health():
     """Check if backend is running"""
     return jsonify({"status": "Backend is running!", "timestamp": datetime.now().isoformat()})
 
-# ==================== SESSION ENDPOINTS ====================
 
 @app.route('/api/sessions/create', methods=['POST'])
 def create_session():
     """Create a new trip planning session"""
     try:
         data = request.json
-        session_id = str(uuid.uuid4())[:8]  # Short unique ID
+        session_id = str(uuid.uuid4())[:8]  
         
         conn = get_db()
         cursor = conn.cursor()
@@ -66,14 +63,12 @@ def get_session(session_id):
         conn = get_db()
         cursor = conn.cursor()
         
-        # Get session info
         cursor.execute('SELECT * FROM sessions WHERE id = ?', (session_id,))
         session = cursor.fetchone()
         
         if not session:
             return jsonify({"error": "Session not found"}), 404
         
-        # Get members info
         cursor.execute('SELECT * FROM session_members WHERE session_id = ?', (session_id,))
         members = cursor.fetchall()
         
@@ -112,12 +107,10 @@ def submit_preferences(session_id):
         conn = get_db()
         cursor = conn.cursor()
         
-        # Check if session exists
         cursor.execute('SELECT * FROM sessions WHERE id = ?', (session_id,))
         if not cursor.fetchone():
             return jsonify({"error": "Session not found"}), 404
         
-        # Add/Update member preferences
         cursor.execute('''
         INSERT OR REPLACE INTO session_members 
         (session_id, name, email, budget_min, budget_max, vibe_score, 
@@ -133,7 +126,7 @@ def submit_preferences(session_id):
             ','.join(data.get('cuisines', [])),
             ','.join(data.get('activity_types', [])),
             ','.join(data.get('dietary_restrictions', [])),
-            1,  # submitted = true
+            1,  
             datetime.now()
         ))
         
@@ -148,7 +141,6 @@ def submit_preferences(session_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ==================== PLACES ENDPOINT ====================
 
 @app.route('/api/places', methods=['GET'])
 def get_all_places():
@@ -172,7 +164,6 @@ def get_all_places():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ==================== ERROR HANDLERS ====================
 
 @app.errorhandler(404)
 def not_found(error):
@@ -182,7 +173,6 @@ def not_found(error):
 def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
-# ==================== MAIN ====================
 
 if __name__ == '__main__':
     print("🚀 GroupVibe Backend Starting...")

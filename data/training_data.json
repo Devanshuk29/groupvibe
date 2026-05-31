@@ -1,0 +1,24 @@
+{
+  "friends": [
+    {"id": 1, "budget": 2000, "vibe_score": 4, "preferred_categories": ["dining", "nightlife"], "dietary": ["vegetarian"]},
+    {"id": 2, "budget": 1800, "vibe_score": 5, "preferred_categories": ["adventure", "sports"], "dietary": []},
+    {"id": 3, "budget": 800, "vibe_score": 2, "preferred_categories": ["nature", "shopping"], "dietary": ["vegan"]},
+    {"id": 4, "budget": 1500, "vibe_score": 3, "preferred_categories": ["dining", "shopping"], "dietary": ["vegetarian"]},
+    {"id": 5, "budget": 3000, "vibe_score": 5, "preferred_categories": ["nightlife", "adventure"], "dietary": []},
+    {"id": 6, "budget": 500, "vibe_score": 1, "preferred_categories": ["nature", "dining"], "dietary": ["non-vegetarian"]},
+    {"id": 7, "budget": 2500, "vibe_score": 4, "preferred_categories": ["dining", "adventure"], "dietary": []},
+    {"id": 8, "budget": 1200, "vibe_score": 3, "preferred_categories": ["shopping", "sports"], "dietary": ["vegetarian"]},
+    {"id": 9, "budget": 900, "vibe_score": 2, "preferred_categories": ["nature", "dining"], "dietary": []},
+    {"id": 10, "budget": 2200, "vibe_score": 4, "preferred_categories": ["nightlife", "dining"], "dietary": []},
+    {"id": 11, "budget": 700, "vibe_score": 1, "preferred_categories": ["nature", "shopping"], "dietary": ["vegan"]},
+    {"id": 12, "budget": 1600, "vibe_score": 3, "preferred_categories": ["sports", "adventure"], "dietary": []},
+    {"id": 13, "budget": 2800, "vibe_score": 5, "preferred_categories": ["dining", "nightlife"], "dietary": []},
+    {"id": 14, "budget": 400, "vibe_score": 1, "preferred_categories": ["nature", "shopping"], "dietary": ["vegetarian"]},
+    {"id": 15, "budget": 1900, "vibe_score": 4, "preferred_categories": ["adventure", "sports"], "dietary": []},
+    {"id": 16, "budget": 1100, "vibe_score": 2, "preferred_categories": ["dining", "nature"], "dietary": ["non-vegetarian"]},
+    {"id": 17, "budget": 2300, "vibe_score": 4, "preferred_categories": ["nightlife", "adventure"], "dietary": []},
+    {"id": 18, "budget": 600, "vibe_score": 1, "preferred_categories": ["nature", "dining"], "dietary": ["vegan"]},
+    {"id": 19, "budget": 3000, "vibe_score": 5, "preferred_categories": ["dining", "nightlife"], "dietary": []},
+    {"id": 20, "budget": 1400, "vibe_score": 3, "preferred_categories": ["shopping", "sports"], "dietary": ["vegetarian"]}
+  ]
+}
