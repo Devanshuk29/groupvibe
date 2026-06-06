@@ -19,6 +19,20 @@ def extract_features(friends):
     return np.array(features)
 
 def cluster_friends(friends):
+    if len(friends) == 1:
+        return {
+            "assignments": {friends[0]["id"]: {"cluster": 0, "is_outlier": False}},
+            "num_clusters": 1,
+            "outliers": []
+        }
+    
+    # If only 2 friends, also skip clustering
+    if len(friends) == 2:
+        return {
+            "assignments": {f["id"]: {"cluster": 0, "is_outlier": False} for f in friends},
+            "num_clusters": 1,
+            "outliers": []
+        }
     """
     Cluster friends using HDBSCAN
     Input: list of friend profiles
