@@ -10,7 +10,6 @@ export default function WaitingRoom() {
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  // Poll session every 3 seconds
   useEffect(() => {
     const fetchSession = async () => {
       try {
@@ -63,7 +62,6 @@ export default function WaitingRoom() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)' }}>
 
-      {/* Navbar */}
       <nav style={{
         display: 'flex',
         alignItems: 'center',
@@ -103,7 +101,7 @@ export default function WaitingRoom() {
           Share this code so everyone can join
         </p>
 
-        {/* Session Code Box */}
+        
         <div style={{
           background: 'var(--bg-secondary)',
           borderRadius: '12px',
@@ -167,7 +165,6 @@ export default function WaitingRoom() {
           </div>
         </div>
 
-        {/* Members Progress */}
         <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
           {session?.submitted_count || 0} of {session?.total_members || 0} submitted
         </p>

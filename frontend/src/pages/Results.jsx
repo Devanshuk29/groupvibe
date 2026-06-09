@@ -1,14 +1,29 @@
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
-import { ArrowLeft, Download, Share2, RefreshCw } from 'lucide-react'
-import { generateRecommendations } from '../services/api'
-import { useState } from 'react'
+import { Download, Share2, RefreshCw } from 'lucide-react'
+import { generateRecommendations, getVotes } from '../services/api'
 
 export default function Results() {
   const { sessionId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const [loading, setLoading] = useState(false)
+  const [votes, setVotes] = useState({})
   const results = location.state?.results
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      try {
+        const response = await getVotes(sessionId)
+        setVotes(response.data.votes)
+      } catch (error) {
+        console.error('Error fetching votes:', error)
+      }
+    }
+    fetchVotes()
+    const interval = setInterval(fetchVotes, 5000)
+    return () => clearInterval(interval)
+  }, [sessionId])
 
   if (!results) {
     navigate(`/session/${sessionId}`)
@@ -37,7 +52,6 @@ export default function Results() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)' }}>
 
-      {/* Navbar */}
       <nav style={{
         display: 'flex',
         alignItems: 'center',
@@ -51,6 +65,7 @@ export default function Results() {
           <span style={{ fontSize: '17px', fontWeight: '500', color: 'var(--text-primary)' }}>GroupVibe</span>
         </div>
         <button
+          onClick={() => window.print()}
           style={{
             background: 'transparent',
             color: 'var(--text-primary)',
@@ -76,7 +91,6 @@ export default function Results() {
           Based on preferences from {group_analysis?.total_members} friends
         </p>
 
-        {/* Compatibility Card */}
         <div style={{
           background: 'var(--bg-secondary)',
           borderRadius: '12px',
@@ -103,7 +117,6 @@ export default function Results() {
         </div>
       </div>
 
-      {/* Recommendation Cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '0 24px 16px', maxWidth: '620px', margin: '0 auto' }}>
         {recommendations?.map((rec, i) => (
           <div
@@ -120,7 +133,7 @@ export default function Results() {
               cursor: 'pointer'
             }}
           >
-            {/* Rank */}
+
             <div style={{
               width: '34px', height: '34px',
               borderRadius: '50%',
@@ -133,7 +146,6 @@ export default function Results() {
               {rec.rank}
             </div>
 
-            {/* Info */}
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)', marginBottom: '4px' }}>
                 {rec.name}
@@ -148,15 +160,28 @@ export default function Results() {
               </p>
             </div>
 
-            {/* Score */}
-            <div style={{ fontSize: '18px', fontWeight: '500', color: '#7F77DD' }}>
-              {Math.round(rec.score * 100)}%
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '18px', fontWeight: '500', color: '#7F77DD' }}>
+                {Math.round(rec.score * 100)}%
+              </div>
+              {votes[String(rec.place_id)] > 0 && (
+                <div style={{
+                  fontSize: '11px',
+                  color: '#534AB7',
+                  background: '#EEEDFE',
+                  padding: '2px 8px',
+                  borderRadius: '99px',
+                  marginTop: '4px',
+                  whiteSpace: 'nowrap'
+                }}>
+                  👍 {votes[String(rec.place_id)]} vote{votes[String(rec.place_id)] > 1 ? 's' : ''}
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Action Buttons */}
       <div style={{ display: 'flex', gap: '8px', padding: '0 24px 24px', maxWidth: '620px', margin: '0 auto', flexWrap: 'wrap' }}>
         <button
           onClick={handleWhatsApp}

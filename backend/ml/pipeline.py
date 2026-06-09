@@ -35,6 +35,62 @@ def get_places_from_db():
     conn.close()
     return places
 
+def is_place_open(place, available_date, available_time):
+    """
+    Check if a place is open on the requested date and time
+    Returns True if open, False if closed
+    """
+    if not available_date and not available_time:
+        return True  
+    
+    time_slots = {
+        'morning': (9, 12),
+        'afternoon': (12, 17),
+        'evening': (17, 21),
+        'night': (21, 24)
+    }
+    
+    try:
+        hours = json.loads(place['hours']) if isinstance(place['hours'], str) else place['hours']
+        
+        if not hours:
+            return True
+        
+        if available_date:
+            from datetime import datetime as dt
+            date_obj = dt.strptime(available_date, '%Y-%m-%d')
+            day_name = date_obj.strftime('%A').lower()
+        else:
+            day_name = None
+        
+        if day_name and day_name in hours:
+            place_hours = hours[day_name]
+            
+            if place_hours == 'CLOSED':
+                return False
+            
+            if available_time and available_time.lower() in time_slots:
+                slot_start, slot_end = time_slots[available_time.lower()]
+                
+                try:
+                    open_time, close_time = place_hours.split('-')
+                    open_hour = int(open_time.split(':')[0])
+                    close_hour = int(close_time.split(':')[0])
+                    
+                    if close_hour < open_hour:
+                        close_hour += 24
+                    
+                    if slot_end <= open_hour or slot_start >= close_hour:
+                        return False
+                        
+                except:
+                    return True  
+        
+        return True
+        
+    except Exception as e:
+        return True  
+
 def generate_recommendations(session_members, top_n=5):
     """
     Main pipeline: takes session members and returns top N recommendations
@@ -43,7 +99,8 @@ def generate_recommendations(session_members, top_n=5):
     1. HDBSCAN → cluster friends by preferences
     2. Word2Vec → embed places
     3. Neural Net → score each place
-    4. Rank → return top N
+    4. Filter by availability
+    5. Rank → return top N
     """
     print(f"\n🚀 Generating recommendations for {len(session_members)} members...")
     
@@ -74,10 +131,24 @@ def generate_recommendations(session_members, top_n=5):
     
     print(f"✅ Group top categories: {top_categories}")
     print(f"✅ Group avg budget: ₹{avg_budget:.0f}")
-    
+
+    available_dates = [m.get('available_date', '') for m in session_members if m.get('available_date')]
+    available_times = [m.get('available_time', '') for m in session_members if m.get('available_time')]
+
+    common_date = Counter(available_dates).most_common(1)[0][0] if available_dates else ''
+    common_time = Counter(available_times).most_common(1)[0][0] if available_times else ''
+
+    print(f"✅ Filtering for date: {common_date or 'any'}, time: {common_time or 'any'}")
+
     scored_places = []
-    
+    filtered_count = 0
+
     for place in places:
+        if not is_place_open(place, common_date, common_time):
+            filtered_count += 1
+            print(f"❌ {place['name']} filtered out (closed at requested time)")
+            continue
+
         nn_score = score_place(models["neural_net"], place, group_preferences)
         
         w2v_bonus = 0.0
@@ -97,6 +168,8 @@ def generate_recommendations(session_members, top_n=5):
             "nn_score": nn_score,
             "w2v_bonus": round(w2v_bonus, 4)
         })
+
+    print(f"✅ {filtered_count} places filtered out, {len(scored_places)} places scored")
     
     scored_places.sort(key=lambda x: x["score"], reverse=True)
     top_places = scored_places[:top_n]
@@ -114,7 +187,14 @@ def generate_recommendations(session_members, top_n=5):
             "address": place["address"],
             "google_maps_link": place["google_maps_link"],
             "rating": float(place["rating"]) if place["rating"] else 0.0,
+            "review_count": place["review_count"],
             "price_range": place["price_range"],
+            "group_friendly": bool(place["group_friendly"]),
+            "parking": bool(place["parking"]),
+            "food_inside": bool(place["food_inside"]),
+            "best_season": place["best_season"],
+            "duration_hours": place["duration_hours"],
+            "hours": place["hours"],
             "why_recommended": f"Matches group's top preferences: {', '.join(top_categories)}"
         })
     
@@ -127,17 +207,20 @@ def generate_recommendations(session_members, top_n=5):
             "num_clusters": clustering_result["num_clusters"],
             "outliers": clustering_result["outliers"],
             "top_categories": top_categories,
-            "avg_budget": round(avg_budget, 0)
+            "avg_budget": round(avg_budget, 0),
+            "filtered_places": filtered_count,
+            "common_date": common_date,
+            "common_time": common_time
         }
     }
 
 if __name__ == "__main__":
     test_members = [
-        {"id": 1, "budget": 2000, "vibe_score": 4, "preferred_categories": ["dining", "nightlife"], "dietary": ["vegetarian"]},
-        {"id": 2, "budget": 1800, "vibe_score": 5, "preferred_categories": ["dining", "adventure"], "dietary": []},
-        {"id": 3, "budget": 1500, "vibe_score": 3, "preferred_categories": ["dining", "shopping"], "dietary": ["vegetarian"]},
-        {"id": 4, "budget": 2200, "vibe_score": 4, "preferred_categories": ["nightlife", "dining"], "dietary": []},
-        {"id": 5, "budget": 1900, "vibe_score": 4, "preferred_categories": ["adventure", "dining"], "dietary": []}
+        {"id": 1, "budget": 2000, "vibe_score": 4, "preferred_categories": ["dining", "nightlife"], "dietary": ["vegetarian"], "available_date": "2026-06-07", "available_time": "evening"},
+        {"id": 2, "budget": 1800, "vibe_score": 5, "preferred_categories": ["dining", "adventure"], "dietary": [], "available_date": "2026-06-07", "available_time": "evening"},
+        {"id": 3, "budget": 1500, "vibe_score": 3, "preferred_categories": ["dining", "shopping"], "dietary": ["vegetarian"], "available_date": "2026-06-07", "available_time": "evening"},
+        {"id": 4, "budget": 2200, "vibe_score": 4, "preferred_categories": ["nightlife", "dining"], "dietary": [], "available_date": "2026-06-07", "available_time": "evening"},
+        {"id": 5, "budget": 1900, "vibe_score": 4, "preferred_categories": ["adventure", "dining"], "dietary": [], "available_date": "2026-06-07", "available_time": "evening"}
     ]
     
     result = generate_recommendations(test_members)
@@ -147,6 +230,9 @@ if __name__ == "__main__":
     print(f"   Clusters: {result['group_analysis']['num_clusters']}")
     print(f"   Top Categories: {result['group_analysis']['top_categories']}")
     print(f"   Avg Budget: ₹{result['group_analysis']['avg_budget']}")
+    print(f"   Filtered Places: {result['group_analysis']['filtered_places']}")
+    print(f"   Date: {result['group_analysis']['common_date']}")
+    print(f"   Time: {result['group_analysis']['common_time']}")
     
     print(f"\n🏆 TOP {len(result['recommendations'])} RECOMMENDATIONS:")
     for rec in result["recommendations"]:

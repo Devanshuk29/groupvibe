@@ -5,6 +5,7 @@ import { submitPreferences } from '../services/api'
 
 const CATEGORIES = ['Dining', 'Nightlife', 'Adventure', 'Nature', 'Shopping', 'Sports']
 const DIETARY = ['Vegetarian', 'Vegan', 'Gluten-free', 'None']
+const TIME_SLOTS = ['Morning', 'Afternoon', 'Evening', 'Night']
 
 export default function Preferences() {
   const { sessionId } = useParams()
@@ -18,7 +19,9 @@ export default function Preferences() {
     vibe_score: 3,
     activity_types: [],
     dietary_restrictions: [],
-    cuisines: []
+    cuisines: [],
+    available_date: '',
+    available_time: ''
   })
 
   const toggleItem = (field, item) => {
@@ -34,6 +37,8 @@ export default function Preferences() {
     if (!form.name.trim()) return alert('Please enter your name!')
     if (!form.budget_min || !form.budget_max) return alert('Please enter your budget!')
     if (form.activity_types.length === 0) return alert('Please select at least one activity!')
+    if (!form.available_date) return alert('Please select an available date!')
+    if (!form.available_time) return alert('Please select a time slot!')
 
     setLoading(true)
     try {
@@ -56,7 +61,6 @@ export default function Preferences() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)' }}>
 
-      {/* Navbar */}
       <nav style={{
         display: 'flex',
         alignItems: 'center',
@@ -88,7 +92,6 @@ export default function Preferences() {
         </button>
       </nav>
 
-      {/* Form */}
       <div style={{
         background: 'var(--bg-secondary)',
         borderRadius: '12px',
@@ -103,7 +106,7 @@ export default function Preferences() {
           Takes 2 minutes — be honest for better results!
         </p>
 
-        {/* Name */}
+        
         <div style={{ marginBottom: '14px' }}>
           <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '5px' }}>
             Your name
@@ -123,7 +126,6 @@ export default function Preferences() {
           />
         </div>
 
-        {/* Email */}
         <div style={{ marginBottom: '14px' }}>
           <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '5px' }}>
             Email (optional)
@@ -143,7 +145,6 @@ export default function Preferences() {
           />
         </div>
 
-        {/* Budget */}
         <div style={{ marginBottom: '14px' }}>
           <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '5px' }}>
             Budget per person (₹)
@@ -178,7 +179,49 @@ export default function Preferences() {
           </div>
         </div>
 
-        {/* Activity Types */}
+          <div style={{ marginBottom: '14px' }}>
+            <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '5px' }}>
+              Available date
+            </label>
+            <input
+              type="date"
+              value={form.available_date}
+              onChange={e => setForm({ ...form, available_date: e.target.value })}
+              style={{
+                width: '100%', padding: '9px 12px',
+                border: '0.5px solid var(--border-color)',
+                borderRadius: '8px', fontSize: '13px',
+                background: 'var(--bg-primary)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+
+        <div style={{ marginBottom: '14px' }}>
+          <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+            Available time slot
+          </label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+            {TIME_SLOTS.map(slot => (
+              <span
+                key={slot}
+                onClick={() => setForm({ ...form, available_time: slot.toLowerCase() })}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '99px',
+                  border: '0.5px solid var(--border-color)',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  background: form.available_time === slot.toLowerCase() ? '#EEEDFE' : 'var(--bg-primary)',
+                  color: form.available_time === slot.toLowerCase() ? '#534AB7' : 'var(--text-secondary)'
+                }}
+              >
+                {slot}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <div style={{ marginBottom: '14px' }}>
           <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
             What are you in the mood for?
@@ -204,7 +247,6 @@ export default function Preferences() {
           </div>
         </div>
 
-        {/* Dietary */}
         <div style={{ marginBottom: '14px' }}>
           <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
             Dietary restrictions
@@ -230,7 +272,6 @@ export default function Preferences() {
           </div>
         </div>
 
-        {/* Vibe Slider */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
             Vibe — how adventurous are you feeling? ({form.vibe_score}/5)
@@ -248,7 +289,6 @@ export default function Preferences() {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={loading}

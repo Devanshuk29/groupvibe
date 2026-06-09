@@ -26,7 +26,7 @@ def cluster_friends(friends):
             "outliers": []
         }
     
-    # If only 2 friends, also skip clustering
+
     if len(friends) == 2:
         return {
             "assignments": {f["id"]: {"cluster": 0, "is_outlier": False} for f in friends},

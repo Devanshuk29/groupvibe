@@ -1,17 +1,58 @@
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, MapPin, Star, Users, Car, UtensilsCrossed, Leaf, Clock, ThumbsUp, Share2 } from 'lucide-react'
+import { voteForPlace, getVotes } from '../services/api'
 
 export default function PlaceDetails() {
   const navigate = useNavigate()
   const location = useLocation()
   const { place, sessionId } = location.state || {}
 
+  const [voted, setVoted] = useState(false)
+  const [voteCount, setVoteCount] = useState(0)
+  const [votingLoading, setVotingLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      try {
+        const response = await getVotes(sessionId)
+        const votes = response.data.votes
+        const count = votes[String(place.place_id)] || 0
+        setVoteCount(count)
+      } catch (error) {
+        console.error('Error fetching votes:', error)
+      }
+    }
+    if (sessionId) fetchVotes()
+  }, [sessionId, place?.place_id])
+
+  const handleVote = async () => {
+    setVotingLoading(true)
+    try {
+      const memberName = localStorage.getItem('memberName') || 'Anonymous'
+      const response = await voteForPlace(sessionId, {
+        place_id: place.place_id,
+        member_name: memberName
+      })
+      if (response.data.action === 'added') {
+        setVoted(true)
+        setVoteCount(prev => prev + 1)
+      } else {
+        setVoted(false)
+        setVoteCount(prev => prev - 1)
+      }
+    } catch (error) {
+      console.error('Error voting:', error)
+    } finally {
+      setVotingLoading(false)
+    }
+  }
+
   if (!place) {
     navigate('/')
     return null
   }
 
-  // Parse hours if it's a string
   let hours = {}
   try {
     hours = typeof place.hours === 'string' ? JSON.parse(place.hours) : place.hours || {}
@@ -21,7 +62,7 @@ export default function PlaceDetails() {
 
   const infoRows = [
     { icon: <MapPin size={15} />, label: 'Address', value: place.address },
-    { icon: <Star size={15} />, label: 'Rating', value: `${place.rating} (${place.review_count?.toLocaleString()} reviews)` },
+    { icon: <Star size={15} />, label: 'Rating', value: `${place.rating} (${place.review_count?.toLocaleString() || 'N/A'} reviews)` },
     { icon: <UtensilsCrossed size={15} />, label: 'Price range', value: place.price_range },
     { icon: <Users size={15} />, label: 'Group friendly', value: place.group_friendly ? 'Yes' : 'No', positive: place.group_friendly },
     { icon: <Car size={15} />, label: 'Parking', value: place.parking ? 'Yes' : 'No', positive: place.parking },
@@ -33,7 +74,6 @@ export default function PlaceDetails() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)' }}>
 
-      {/* Navbar */}
       <nav style={{
         display: 'flex',
         alignItems: 'center',
@@ -67,7 +107,6 @@ export default function PlaceDetails() {
 
       <div style={{ padding: '24px', maxWidth: '560px', margin: '0 auto' }}>
 
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
             <div style={{
@@ -106,7 +145,6 @@ export default function PlaceDetails() {
           </div>
         </div>
 
-        {/* Details Card */}
         <div style={{
           background: 'var(--bg-primary)',
           border: '0.5px solid var(--border-color)',
@@ -141,7 +179,6 @@ export default function PlaceDetails() {
           ))}
         </div>
 
-        {/* Hours Card */}
         {Object.keys(hours).length > 0 && (
           <div style={{
             background: 'var(--bg-primary)',
@@ -164,7 +201,6 @@ export default function PlaceDetails() {
           </div>
         )}
 
-        {/* Why Recommended */}
         <div style={{
           background: 'var(--bg-primary)',
           border: '0.5px solid var(--border-color)',
@@ -180,7 +216,6 @@ export default function PlaceDetails() {
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button
             onClick={() => window.open(place.google_maps_link)}
@@ -195,15 +230,25 @@ export default function PlaceDetails() {
             <MapPin size={14} /> Open in Google Maps
           </button>
           <button
+            onClick={handleVote}
+            disabled={votingLoading}
             style={{
-              background: 'transparent', color: 'var(--text-primary)',
-              border: '0.5px solid var(--border-color)',
-              padding: '9px 18px', borderRadius: '8px',
-              fontSize: '13px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '6px'
+              background: voted ? '#EEEDFE' : 'transparent',
+              color: voted ? '#534AB7' : 'var(--text-primary)',
+              border: voted ? '0.5px solid #AFA9EC' : '0.5px solid var(--border-color)',
+              padding: '9px 18px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              opacity: votingLoading ? 0.7 : 1
             }}
           >
-            <ThumbsUp size={14} /> Vote for this place
+            <ThumbsUp size={14} />
+            {voted ? 'Voted!' : 'Vote for this place'}
+            {voteCount > 0 && ` (${voteCount})`}
           </button>
           <button
             onClick={() => {

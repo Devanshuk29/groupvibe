@@ -123,8 +123,9 @@ def submit_preferences(session_id):
         cursor.execute('''
         INSERT INTO session_members 
         (session_id, name, email, budget_min, budget_max, vibe_score,
-         cuisines, activity_types, dietary_restrictions, submitted, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        cuisines, activity_types, dietary_restrictions, 
+        available_date, available_time, submitted, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             session_id,
             data.get('name'),
@@ -135,6 +136,8 @@ def submit_preferences(session_id):
             ','.join(data.get('cuisines', [])),
             ','.join(data.get('activity_types', [])),
             ','.join(data.get('dietary_restrictions', [])),
+            data.get('available_date', ''),
+            data.get('available_time', ''),
             1,
             datetime.now().isoformat()
         ))
@@ -228,8 +231,10 @@ def generate_recommendations(session_id):
                 "budget": budget,
                 "vibe_score": member['vibe_score'],
                 "preferred_categories": preferred_categories,
-                "dietary": member['dietary_restrictions'].split(',') if member['dietary_restrictions'] else []
-            })
+                "dietary": member['dietary_restrictions'].split(',') if member['dietary_restrictions'] else [],
+                "available_date": member['available_date'] if member['available_date'] else '',
+                "available_time": member['available_time'] if member['available_time'] else ''
+           })
         
         print(f"✅ Processing {len(session_members)} members for session {session_id}")
         
@@ -267,6 +272,80 @@ def generate_recommendations(session_id):
         
     except Exception as e:
         print(f"Error generating recommendations: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/sessions/<session_id>/vote', methods=['POST'])
+def vote_for_place(session_id):
+    try:
+        data = request.json
+        place_id = data.get('place_id')
+        member_name = data.get('member_name')
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM sessions WHERE id = ?', (session_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Session not found"}), 404
+
+        cursor.execute('''
+            SELECT * FROM votes 
+            WHERE session_id = ? AND place_id = ?
+            AND vote_type = ?
+        ''', (session_id, place_id, member_name))
+        
+        existing_vote = cursor.fetchone()
+
+        if existing_vote:
+            cursor.execute('''
+                DELETE FROM votes 
+                WHERE session_id = ? AND place_id = ? AND vote_type = ?
+            ''', (session_id, place_id, member_name))
+            conn.commit()
+            conn.close()
+            return jsonify({"success": True, "action": "removed"}), 200
+
+        cursor.execute('''
+            INSERT INTO votes (session_id, member_id, place_id, vote_type, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (
+            session_id,
+            0,
+            place_id,
+            member_name,
+            datetime.now().isoformat()
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({"success": True, "action": "added"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/sessions/<session_id>/votes', methods=['GET'])
+def get_votes(session_id):
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT place_id, COUNT(*) as vote_count 
+            FROM votes WHERE session_id = ?
+            GROUP BY place_id
+        ''', (session_id,))
+
+        votes = cursor.fetchall()
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "votes": {str(row['place_id']): row['vote_count'] for row in votes}
+        }), 200
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.errorhandler(404)

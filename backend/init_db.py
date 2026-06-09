@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS session_members (
   cuisines TEXT,
   activity_types TEXT,
   dietary_restrictions TEXT,
+  available_date TEXT,
+  available_time TEXT,
   submitted BOOLEAN DEFAULT 0,
   created_at TIMESTAMP,
   FOREIGN KEY(session_id) REFERENCES sessions(id)

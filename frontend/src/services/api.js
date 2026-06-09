@@ -15,5 +15,7 @@ export const submitPreferences = (sessionId, data) => api.post(`/api/sessions/${
 export const generateRecommendations = (sessionId) => api.post(`/api/sessions/${sessionId}/generate-recommendations`, {})
 
 export const getPlaces = () => api.get('/api/places')
+export const voteForPlace = (sessionId, data) => api.post(`/api/sessions/${sessionId}/vote`, data)
+export const getVotes = (sessionId) => api.get(`/api/sessions/${sessionId}/votes`)
 
 export default api

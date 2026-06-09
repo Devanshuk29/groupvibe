@@ -34,7 +34,6 @@ export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)' }}>
 
-      {/* Navbar */}
       <nav style={{
         display: 'flex',
         alignItems: 'center',
@@ -63,7 +62,6 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* Hero */}
       <div style={{ padding: '56px 24px 40px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
 
         <div style={{
@@ -89,7 +87,6 @@ export default function Home() {
           Share one link with your friends, collect everyone's preferences, and let AI find the perfect spot for your group.
         </p>
 
-        {/* Join input */}
         {joining && (
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '16px' }}>
             <input
@@ -127,7 +124,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* CTA Buttons */}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
             onClick={handleCreateTrip}
@@ -167,7 +163,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Feature Cards */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
